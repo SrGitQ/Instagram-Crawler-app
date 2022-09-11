@@ -1,0 +1,3 @@
+'''
+Flask app initialization
+'''
