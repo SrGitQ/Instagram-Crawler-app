@@ -151,3 +151,6 @@ yarn-error.log*
 
 credentials.py
 tests.py
+
+chromedriver
+sample.json
