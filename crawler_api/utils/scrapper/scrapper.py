@@ -1,7 +1,7 @@
 '''
 Scrape a instagram user and return a json
 '''
-from credentials import * 
+from crawler_api.utils.scrapper.credentials import * 
 from selenium import webdriver
 from bs4 import BeautifulSoup as bs
 import time
