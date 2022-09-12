@@ -1,2 +1,3 @@
-def __init__():
-  return "<h1>Hello World!</h1>"
+# get the general list of users for the search box
+def home():
+  return "<h1>Ready to scrape</h1>"
