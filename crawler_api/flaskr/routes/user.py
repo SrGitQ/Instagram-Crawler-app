@@ -1,19 +1,42 @@
-import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 from crawler_api.utils.scrapper.scrapper import scrapper
+from crawler_api.utils.preprocessing import changeDataType
+from crawler_api.flaskr.db import insertDoc, findUser, updateUser
 
 def user(username, browser):
   # check if the user exists in the database
-  user_data = False
+  user_data = findUser(username)
+  print(user_data)
   if user_data:
     # check if the user data is older than 24 hours
-    if user_data['date'] < datetime.now() - timedelta(hours=24):
+    if user_data['Time'] < datetime.now() - timedelta(hours=24):
       # update the user data and scrape again
-      user_data = 'update_user(username)'
+      user_data = scrapper(username, browser)
+      # preprocess the data
+      user_data = changeDataType(user_data)
+      # update the user data in the database
+      updateUser(username, user_data)
   else:
     #scrape the user
     user_data = scrapper(username, browser)
     # prepare the user data to be saved in the database
+    print('scrapped data: ', user_data)
+    user_data = changeDataType(user_data)
     # save the user data in the database
+    insertDoc(user_data)
 
   return f'<p>{user_data}</p>'
+
+'''
+from datetime import datetime, timedelta
+
+# create datetime now
+now = datetime.now()
+
+# create datetime 24 hours ago
+ago = now - timedelta(hours=20)
+
+# check if now is greater than 24 hours ago
+if now > ago:
+  print('now is greater than 24 hours ago')
+'''

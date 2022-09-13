@@ -41,12 +41,12 @@ def scrapper(user_scrap, browser):
   try:
     name = browser.find_element('xpath','/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/main/div/header/section/div[1]/h2').text
   except:
-    name = 'Nan'
+    name = ''
   
   try:
-    description = browser.find_element('xpath','/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/main/div/div[1]/div').text
+    description = browser.find_element(By.CSS_SELECTOR,'._aa_c ._aad6._aacu').text
   except:
-    description = 'Nan'
+    description = ''
   
   time.sleep(2)
   
@@ -57,7 +57,7 @@ def scrapper(user_scrap, browser):
   image = browser.find_element(By.CSS_SELECTOR, 'span._aa8h img').get_attribute('src')
   print('scrapping posts... from user: ', user_scrap)
   post = post_status(browser)
-  dictionary = {'Image': image,'User':name, 'Description': description, 'No Posts':num_post, 'Followers':followers, 'Following':following, 'Posts': post, 'Time': now}
-  jsonString = json.dumps(dictionary, indent= 2)
-  print('scrapping done', jsonString)
-  return jsonString
+  dictionary = {'Image': image,'User':name, 'Description': description, 'NoPosts':num_post, 'Followers':followers, 'Following':following, 'Posts': post, 'Time': now}
+  #jsonString = json.dumps(dictionary, indent= 2)
+  #print('scrapping done', jsonString)
+  return dictionary
