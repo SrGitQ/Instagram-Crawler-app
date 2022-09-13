@@ -1,6 +1,6 @@
 import os
 import time
-from credentials import *
+from .credentials import *
 from selenium import webdriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -11,6 +11,7 @@ class InstagramWindow:
     #browser configuration
     route = os.getcwd()
     driver_path = route + driver
+    print('driver path: ', driver_path)
     self.browser = webdriver.Chrome(driver_path)
     self.browser.get("https://www.instagram.com/")
 

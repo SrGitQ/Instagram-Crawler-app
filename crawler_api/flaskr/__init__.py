@@ -1,6 +1,8 @@
 from flask import Flask
+from ..utils.scrapper.browser import InstagramWindow
 
 app = Flask(__name__)
+browser = InstagramWindow('/chromedriver').browser
 
 #routes
 from .routes.home import home
@@ -18,4 +20,4 @@ def getUser(username):
   '''
   return json with user data
   '''
-  return user(username)
+  return user(username, browser)
