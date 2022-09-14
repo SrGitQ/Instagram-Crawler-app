@@ -1,3 +1,6 @@
-# get the general list of users for the search box
+from crawler_api.flaskr.db import findUsers
+
 def home():
-  return "<h1>Ready to scrape</h1>"
+  users = findUsers()
+  print(users)
+  return f"<p>{users}</p>"
