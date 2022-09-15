@@ -61,3 +61,49 @@ def scrapper(user_scrap, browser):
   #jsonString = json.dumps(dictionary, indent= 2)
   #print('scrapping done', jsonString)
   return dictionary
+
+
+'''
+import os
+import json
+import pprint
+from selenium import webdriver
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+
+
+route = os.getcwd()
+driver_path = route
+print('driver path: ', driver_path)
+
+
+#add these variables to the navigator.webdriver test
+capabilities = DesiredCapabilities.CHROME
+capabilities["goog:loggingPrefs"] = {"performance": "ALL"}  # chromedriver 75+
+driver = webdriver.Chrome(
+    driver_path+'/chromedriver',
+    desired_capabilities=capabilities,
+)
+
+
+def process_browser_logs_for_network_events(logs):
+    """
+    Return only logs which have a method that start with "Network.response", "Network.request", or "Network.webSocket"
+    since we're interested in the network events specifically.
+    """
+    for entry in logs:
+        log = json.loads(entry["message"])["message"]
+        if (
+                "Network.response" in log["method"]
+                or "Network.request" in log["method"]
+                or "Network.webSocket" in log["method"]
+        ):  
+            yield log
+
+#SCROLLL all the page
+
+#EXECUTE the function
+
+
+
+
+'''
