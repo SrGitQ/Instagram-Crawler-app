@@ -56,7 +56,7 @@ def findUsers():
   
   """
   
-  return mycol.find()
+  return [u for u in mycol.find()]
 
 def updateUser(username, data):
   

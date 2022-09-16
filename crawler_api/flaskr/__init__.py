@@ -7,6 +7,7 @@ browser = InstagramWindow('/chromedriver').browser
 #routes
 from .routes.home import home
 from .routes.user import user
+from .routes.scrapeLess import scrapeLess
 
 @app.route("/")
 def root():
@@ -21,3 +22,10 @@ def getUser(username):
   return json with user data
   '''
   return user(username, browser)
+
+@app.route("/scrape/<username>")
+def scrapeUser(username):
+  '''
+  return json with user data and run scrapper even if didn't pass 24 hours
+  '''
+  return scrapeLess(username, browser)
