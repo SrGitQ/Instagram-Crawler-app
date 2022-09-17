@@ -1,5 +1,6 @@
 import time
 from datetime import datetime
+from .credentials import *
 import json
 from selenium.webdriver.common.by import By
 
@@ -62,6 +63,37 @@ def scrapper(user_scrap, browser):
   #print('scrapping done', jsonString)
   return dictionary
 
+def process_browser_logs_for_network_events(logs):
+    """
+    Return only logs which have a method that start with "Network.response", "Network.request", or "Network.webSocket"
+    since we're interested in the network events specifically.
+    """
+    for entry in logs:
+        log = json.loads(entry["message"])["message"]
+        if (
+                "Network.response" in log["method"]
+                or "Network.request" in log["method"]
+                or "Network.webSocket" in log["method"]
+        ):  
+            yield log
+
+def new_function (browser):
+
+  browser.get("https://www.instagram.com/"+user_scrap)
+
+  time.sleep(2)
+  scrolldown = browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+  last_count = ''
+
+  while (last_count != scrolldown):
+      time.sleep(2)
+      last_count= scrolldown
+      time.sleep(2)
+      scrolldown = browser.execute_script("window.scrollTo(0, document.body.scrollHeight);var scrolldown=document.body.scrollHeight;return scrolldown;")
+
+  time.sleep(2)
+  logs = browser.get_log("performance")
+  return logs
 
 '''
 import os
