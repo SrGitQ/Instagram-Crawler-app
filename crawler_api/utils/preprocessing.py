@@ -9,9 +9,6 @@ def dictonary(file):
 #Change the data type 
 def changeDataType(data):
 
-    print('debugging data: ', data)
-    print(data, type(data))
-    print(data['NoPosts'])
     Noposts = data['NoPosts']
     Noposts = Noposts.split(' ')
     data['No Posts'] = int(Noposts[0])

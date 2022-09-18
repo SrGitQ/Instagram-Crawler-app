@@ -154,3 +154,5 @@ tests.py
 
 chromedriver
 sample.json
+
+log_entries.txt
