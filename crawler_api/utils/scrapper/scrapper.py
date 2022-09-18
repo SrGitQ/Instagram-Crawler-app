@@ -1,7 +1,6 @@
 from os import link
 import time
 from datetime import datetime
-from .credentials import *
 import json
 import re
 from selenium.webdriver.common.by import By
@@ -58,9 +57,9 @@ def scrapper(user_scrap, browser):
 
 	time.sleep(2)
 
-	num_post = browser.find_element('xpath','/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/main/div/header/section/ul/li[1]/div').text
-	followers = browser.find_element('xpath','/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/main/div/header/section/ul/li[2]/a/div').text
-	following = browser.find_element('xpath','/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/main/div/header/section/ul/li[3]/a/div').text
+	num_post = browser.find_element(By.CSS_SELECTOR,'ul li:nth-of-type(1) div._aacl:has(span._ac2a)').text
+	followers = browser.find_element(By.CSS_SELECTOR,'ul li:nth-of-type(2) div._aacl:has(span._ac2a)').text
+	following = browser.find_element(By.CSS_SELECTOR,'ul li:nth-of-type(3) div._aacl:has(span._ac2a)').text
 
 	image = browser.find_element(By.CSS_SELECTOR, 'span._aa8h img').get_attribute('src')
 	print('scrapping posts... from user: ', user_scrap)#.append(f'https://www.instagram.com/{name}/?__a=1&__d=dis')

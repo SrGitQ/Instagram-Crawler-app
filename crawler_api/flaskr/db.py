@@ -1,7 +1,9 @@
 import pymongo
 import certifi
+from crawler_api.utils.credentials import db_url
+
 ca = certifi.where()
-myclient = pymongo.MongoClient('mongodb+srv://root:Z202WLqDvZI20M9C@jimbo.7d4eq.mongodb.net/?retryWrites=true&w=majority', tlsCAFile=ca)
+myclient = pymongo.MongoClient(db_url, tlsCAFile=ca)
 
 mydb = myclient['instagramScrapper_DB']
 
