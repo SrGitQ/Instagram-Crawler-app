@@ -38,6 +38,8 @@ def post_status(browser):
 
 def scrapper(user_scrap, browser):
 	links = []
+	browser.refresh()
+	time.sleep(2)
 	now = str(datetime.now())
 	browser.get('https://www.instagram.com/' + user_scrap + '/?hl=en')
 	time.sleep(2)
@@ -65,10 +67,11 @@ def scrapper(user_scrap, browser):
 	links = queryGenerator(browser).copy()
 	base_url = ['https://www.instagram.com/'+name+'/?__a=1&__d=dis']
 	links += base_url
-	post = queryCollector(links, browser)
-	dictionary = {'Image': image,'User':name, 'Description': description, 'NoPosts':num_post, 'Followers':followers, 'Following':following, 'Posts': post, 'Time': now}
+	posts = queryCollector(links, browser)
+	posts = filter_posts(posts, name)
+	dictionary = {'Image': image,'User':name, 'Description': description, 'NoPosts':num_post, 'Followers':followers, 'Following':following, 'Posts': posts, 'Time': now}
 	links = []
-
+	posts = []
 	return dictionary
 
 def process_browser_logs_for_network_events(logs):
@@ -86,6 +89,7 @@ def process_browser_logs_for_network_events(logs):
 			yield log
 
 def queryGenerator(browser) -> list:
+	logs = []
 	time.sleep(2)
 	scrolldown = browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 	last_count = ''	
@@ -96,17 +100,25 @@ def queryGenerator(browser) -> list:
 		scrolldown = browser.execute_script("window.scrollTo(0, document.body.scrollHeight);var scrolldown=document.body.scrollHeight;return scrolldown;")	
 	time.sleep(2)
 	logs = browser.get_log("performance")
-	urls = [eventParser(event) for event in logs if eventParser(event)]
+	
+	urls = []
+	for event in logs:
+		url = eventParser(event)
+		if url and url not in urls:
+			urls.append(url)
 	print('urls obtained:', urls)
 	return urls
 
 def eventParser(event:dict) -> str:
-	try:
-		if event['message']['params']['response']['url'] != None:
-			print(event)
-			return event['message']['params']['response']['url']#get if graphql 
-	except:
-		return False
+	text = f'{event}'
+	if '?query_hash=' in text and not 'rsrc.php' in text:
+		print('graphql found')
+		url = re.findall(r'"url".*?},', text)
+		if len(url) > 0:
+			url = url[0].replace('"url":', '').replace('"},', '').replace('"', '')
+			return url
+	
+	return False
 
 def postsParser(posts:dict)->list:
 	post_processed = []
@@ -120,25 +132,32 @@ def postsParser(posts:dict)->list:
 		comments_count = post['edge_media_to_comment']['count']
 		likes_count = post['edge_media_preview_like']['count']
 		url = 'https://www.instagram.com/p/' + post['shortcode']
+		owner = post['owner']['username']
 		post_processed.append({
 			'type': type_,
 			'url': url,
 			'display': display,
 			'description': description,
 			'comments_count': comments_count,
-			'likes_count': likes_count
+			'likes_count': likes_count,
+			'owner': owner
 		})
 	print('posts processed: ', len(post_processed))
 	return post_processed
 
 def queryCollector(urls:list, browser) -> dict:
 	total_posts = []
-	print('urls query: ', len(urls), urls, type(urls))
+	print('urls query: ', len(urls), type(urls))
 	for url in urls:
 		browser.get(url)
 		time.sleep(2)
 		code = browser.page_source
-		jsn = re.findall(r'\{.*\}', code)[0]
+		jsn = re.findall(r'\{.*\}', code)
+		
+		if len(jsn) > 0:
+			jsn = jsn[0]
+		else:
+			pass
 
 		try:
 			if 'seo_category_infos' in jsn:
@@ -150,6 +169,19 @@ def queryCollector(urls:list, browser) -> dict:
 		except:
 			print('error in json')
 			continue
-		total_posts += postsParser(data['edge_owner_to_timeline_media']['edges'])
-	print('total posts: ', len(total_posts), total_posts)
+		if 'edge_owner_to_timeline_media' in f'{data}':
+			posts = data['edge_owner_to_timeline_media']['edges']
+			total_posts += postsParser(posts)
+		else:
+			print('no posts found in: ', url[:30], '...')
 	return total_posts.copy()
+
+def filter_posts(posts, owner):
+	unique_posts = []
+	# filter repeated posts given the url
+	for post in posts:
+		if post['url'] not in [p['url'] for p in unique_posts]:
+			if post['owner'] == owner:
+				unique_posts.append(post)
+				
+	return unique_posts

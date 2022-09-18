@@ -25,9 +25,10 @@ def user(username, browser):
     print('scraping user data')
     #scrape the user
     user_data = scrapper(username, browser)
+
     # prepare the user data to be saved in the database
-    print('scrapped data: ', user_data)
-    user_data = changeDataType(user_data)
+    print('scrapped data: ', f'{user_data}'[:50], '...')
+    #user_data = changeDataType(user_data)
     # save the user data in the database
     insertDoc(user_data)
 
