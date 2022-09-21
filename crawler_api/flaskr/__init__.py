@@ -30,6 +30,7 @@ def make_query():
 from .routes.home import home
 from .routes.user import user
 from .routes.scrapeLess import scrapeLess
+from bson.json_util import dumps
 
 @app.route("/")
 def root():
@@ -43,7 +44,9 @@ def getUser(username):
   '''
   return json with user data
   '''
-  return user(username, make_query())
+  user_ = user(username, make_query())
+  print('type: ', type(user_))
+  return dumps(user_)
 
 @app.route("/scrape/<username>")
 def scrapeUser(username):

@@ -3,6 +3,7 @@ from crawler_api.utils.scrapper.scrapper import scrapper
 from crawler_api.utils.preprocessing import changeDataType
 from crawler_api.flaskr.db import insertDoc, findUser, updateUser
 from crawler_api.utils.timer import isGreater_24hrs
+from flask import jsonify, make_response
 import json
 
 def user(username, browser):
@@ -32,5 +33,4 @@ def user(username, browser):
     # save the user data in the database
     insertDoc(user_data)
 
-  data = json.dumps(f'{user_data}', indent=2)
-  return data
+  return user_data
