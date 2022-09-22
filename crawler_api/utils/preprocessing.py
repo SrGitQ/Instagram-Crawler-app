@@ -30,3 +30,18 @@ def changeDataType(data):
         data['Following'] = int(Following[0])
     
     return data
+
+def preprocess(data):
+    data["NoPosts"] = normalizeGreatCant(data["NoPosts"].replace(" posts", ""))
+    data["Followers"] = normalizeGreatCant(data["Followers"].replace(" followers", ""))
+    data["Following"] = normalizeGreatCant(data["Following"].replace(" following", ""))
+    return data
+  
+def normalizeGreatCant(str_nm):
+  if 'K' in str_nm or 'K' in str_nm:
+    base = 1000
+  elif 'M' in str_nm or 'M' in str_nm:
+    base = 1000000
+  else:
+    base = 1
+  return int(float(str_nm.replace(',','').replace('K', '').replace('M', '')) * base)

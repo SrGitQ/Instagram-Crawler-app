@@ -65,13 +65,27 @@ def scrapper(user_scrap, browser):
 	print('scrapping posts... from user: ', user_scrap)#.append(f'https://www.instagram.com/{name}/?__a=1&__d=dis')
 	links = queryGenerator(browser).copy()
 	base_url = ['https://www.instagram.com/'+name+'/?__a=1&__d=dis']
-	links += base_url
-	posts = queryCollector(links, browser)
-	posts = filter_posts(posts, name)
+	urls_t = base_url + links
+	posts = queryCollector(urls_t, browser)
+	posts = filter_posts(posts, name)[:50]
+	#get the date of the first 50 posts
+	print('posts to scrappe',len(posts))#delete shortcode from the url
+	for i, post in enumerate(posts):
+		print('scrapping date of post: ', i, post['url'])
+		date = scrappeDatePost(browser, post['url'])
+		posts[i]['date'] = date
+
 	dictionary = {'Image': image,'User':name, 'Description': description, 'NoPosts':num_post, 'Followers':followers, 'Following':following, 'Posts': posts, 'Time': now}
+	urls_t = []
 	links = []
 	posts = []
 	return dictionary
+
+def scrappeDatePost(browser, url:str) -> str:
+	browser.get(url)
+	time.sleep(3)
+	date = browser.find_element(By.CSS_SELECTOR, 'time._aaqe').get_attribute('datetime')
+	return date
 
 def process_browser_logs_for_network_events(logs):
 	"""
@@ -110,7 +124,7 @@ def queryGenerator(browser) -> list:
 
 def eventParser(event:dict) -> str:
 	text = f'{event}'
-	if '?query_hash=' in text and not 'rsrc.php' in text:
+	if '?query_hash=' in text and not 'rsrc.php' in text and not 'shortcode' in text:
 		print('graphql found')
 		url = re.findall(r'"url".*?},', text)
 		if len(url) > 0:

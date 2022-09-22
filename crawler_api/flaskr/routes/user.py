@@ -3,6 +3,7 @@ from crawler_api.utils.scrapper.scrapper import scrapper
 from crawler_api.utils.preprocessing import changeDataType
 from crawler_api.flaskr.db import insertDoc, findUser, updateUser
 from crawler_api.utils.timer import isGreater_24hrs
+from crawler_api.utils.preprocessing import preprocess
 from flask import jsonify, make_response
 import json
 
@@ -19,7 +20,11 @@ def user(username, browser):
       # update the user data and scrape again
       user_data = scrapper(username, browser)
       # preprocess the data
-      user_data = changeDataType(user_data)
+      user_data = preprocess(user_data)
+
+      # analize metrics
+      
+
       # update the user data in the database
       updateUser(username, user_data)
   else:
@@ -29,7 +34,11 @@ def user(username, browser):
 
     # prepare the user data to be saved in the database
     print('scrapped data: ', f'{user_data}'[:50], '...')
-    #user_data = changeDataType(user_data)
+    user_data = preprocess(user_data)
+
+    # analize metrics
+
+
     # save the user data in the database
     insertDoc(user_data)
 

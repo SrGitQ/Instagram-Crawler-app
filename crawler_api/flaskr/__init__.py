@@ -15,11 +15,13 @@ def make_query():
   global current_query_number
   global browsers
   current_query_number += 1
-  if current_query_number > 3:
+  if current_query_number > 2:
     current_query_number = 0
     browser_index += 1
     if browser_index >= len(browsers):
       browser_index = 0
+      for browser in browsers:
+        browser.close()
       browsers = [InstagramWindow('/chromedriver', account).browser for account in accounts]
   print('scrapping with browser: ', browser_index, 'account assigned: ', accounts[browser_index])
   return browsers[browser_index]
