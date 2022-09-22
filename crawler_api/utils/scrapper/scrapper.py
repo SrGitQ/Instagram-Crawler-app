@@ -2,9 +2,9 @@ from os import link
 import time
 from datetime import datetime
 import json
-import re
 from selenium.webdriver.common.by import By
 import re
+import os
 
 def get_links(browser):
 	time.sleep(2)
@@ -36,6 +36,22 @@ def post_status(browser):
 	
 	return posts
 
+def save_profile_pic(user, img):
+	try:
+		os.mkdir(f'./pics/{user}')
+	except:
+		pass
+	with open(f'./pics/{user}/{user}.png', 'wb') as f:
+		f.write(img)
+
+def save_post_pic(post, user, img):
+	try:
+		os.mkdir(f'./pics/{user}/posts')
+	except:
+		pass
+	with open(f'./pics/{user}/posts/{post}.png', 'wb') as f:
+		f.write(img)
+
 def scrapper(user_scrap, browser):
 	links = []
 	browser.refresh()
@@ -62,7 +78,9 @@ def scrapper(user_scrap, browser):
 	followers = browser.find_element(By.CSS_SELECTOR,'ul li:nth-of-type(2) div._aacl:has(span._ac2a)').text
 	following = browser.find_element(By.CSS_SELECTOR,'ul li:nth-of-type(3) div._aacl:has(span._ac2a)').text
 
-	image = browser.find_element(By.CSS_SELECTOR, 'span._aa8h img').get_attribute('src')
+	image = browser.find_element(By.CSS_SELECTOR, 'span._aa8h img').screenshot_as_png #.get_attribute('src')
+	save_profile_pic(user_scrap, image)
+
 	print('scrapping posts... from user: ', user_scrap)#.append(f'https://www.instagram.com/{name}/?__a=1&__d=dis')
 	links = queryGenerator(browser).copy()
 	base_url = ['https://www.instagram.com/'+name+'/?__a=1&__d=dis']
@@ -73,7 +91,7 @@ def scrapper(user_scrap, browser):
 	print('posts to scrappe',len(posts))#delete shortcode from the url
 	for i, post in enumerate(posts):
 		print('scrapping date of post: ', i, post['url'])
-		date = scrappeDatePost(browser, post['url'])
+		date = scrappeDatePost(browser, post['url'], name)
 		posts[i]['date'] = date.split('T')[0]
 
 	dictionary = {'Image': image,'User':name, 'Description': description, 'NoPosts':num_post, 'Followers':followers, 'Following':following, 'Posts': posts, 'Time': now}
@@ -82,10 +100,15 @@ def scrapper(user_scrap, browser):
 	posts = []
 	return dictionary
 
-def scrappeDatePost(browser, url:str) -> str:
+def scrappeDatePost(browser, url:str, user) -> str:
 	browser.get(url)
 	time.sleep(3)
-	date = browser.find_element(By.CSS_SELECTOR, 'time._aaqe').get_attribute('datetime')
+	try:
+		date = browser.find_element(By.CSS_SELECTOR, 'time._aaqe').get_attribute('datetime')
+		image = browser.find_element(By.CSS_SELECTOR, '._aagv img').screenshot_as_png
+		save_post_pic(url.split('p')[2].replace('/', '').replace('/', ''), user, image)
+	except:
+		date = '2000-01-01'
 	return date
 
 def process_browser_logs_for_network_events(logs):

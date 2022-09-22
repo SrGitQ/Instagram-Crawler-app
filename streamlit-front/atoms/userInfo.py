@@ -7,7 +7,7 @@ def renderUserName(user):
   return f"<h3 style='color: white;'>{user['User']}</h3>"
 
 def profile_info(user):
-  img = avatarImgH(user['Image'])
+  img = avatarImgH('/pics/jmbalanzar/jmbalanzar.png')
   name = renderUserName(user)
   posts = gdBullet('Posts', user['Posts'])
   followers = gdBullet('Followers', user['Followers'])

@@ -41,14 +41,14 @@ def total_comments(data):
 def post_ranking(data):
     
     followers= data['Followers']
-    query= data['Posts']
+    query= data['Posts'].copy()
     elements=["type", 'description', 'comments_count', 'owner', 'date']
     for x in query:
         percent= round((x['likes_count'] * 100)/ followers)
         x['scopePercent']= percent
         
-        for item in elements:
-            del x[item]
+        #for item in elements:
+        #    del x[item]
         
         
     query.sort(key=operator.itemgetter('likes_count'), reverse=True)
