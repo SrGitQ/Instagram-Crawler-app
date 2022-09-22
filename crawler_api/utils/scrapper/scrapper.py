@@ -4,6 +4,7 @@ from datetime import datetime
 import json
 import re
 from selenium.webdriver.common.by import By
+import re
 
 def get_links(browser):
 	time.sleep(2)
@@ -73,7 +74,7 @@ def scrapper(user_scrap, browser):
 	for i, post in enumerate(posts):
 		print('scrapping date of post: ', i, post['url'])
 		date = scrappeDatePost(browser, post['url'])
-		posts[i]['date'] = date
+		posts[i]['date'] = date.split('T')[0]
 
 	dictionary = {'Image': image,'User':name, 'Description': description, 'NoPosts':num_post, 'Followers':followers, 'Following':following, 'Posts': posts, 'Time': now}
 	urls_t = []
