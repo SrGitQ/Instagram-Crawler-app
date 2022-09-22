@@ -4,6 +4,7 @@ from crawler_api.utils.preprocessing import changeDataType
 from crawler_api.flaskr.db import insertDoc, findUser, updateUser
 from crawler_api.utils.timer import isGreater_24hrs
 from crawler_api.utils.preprocessing import preprocess
+from crawler_api.utils.userParser import response
 from flask import jsonify, make_response
 import json
 
@@ -23,7 +24,7 @@ def user(username, browser):
       user_data = preprocess(user_data)
 
       # analize metrics
-      
+      user_data['analitics'] = response(user_data)
 
       # update the user data in the database
       updateUser(username, user_data)
@@ -37,7 +38,7 @@ def user(username, browser):
     user_data = preprocess(user_data)
 
     # analize metrics
-
+    user_data['analitics'] = response(user_data)
 
     # save the user data in the database
     insertDoc(user_data)
