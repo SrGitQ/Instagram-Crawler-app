@@ -6,6 +6,8 @@ from atoms.userInfo import profile_info
 from atoms.polbullet import statsBullet
 from atoms.posts import postsIcons
 from atoms.posts import topPosts
+#import datetime
+from datetime import datetime
 import numpy as np
 import pandas as pd
 
@@ -91,11 +93,25 @@ def renderUser(user):
   #chart_data = pd.DataFrame({'Date': table_date})
   #r1_col2.write(chart_data)
   #st.bar_chart(chart_data['Date'])
-  df = pd.DataFrame(
-    np.random.randn(15, 1),
-    columns=["a"])
+  #df = pd.DataFrame(
+  #  np.random.randn(15, 1),
+  #  columns=["a"])
+#
+  #r1_col2.bar_chart(df)
 
-  r1_col2.bar_chart(df)
+  chart_data = pd.DataFrame({'Date': table_date})
+  days= []
+  for item in chart_data['Date']:
+    day= datetime.strptime(str(item), '%Y-%m-%d').strftime('%a')
+    days.append(day)
+  
+  chart_data= chart_data.assign(day=days)
+  count_days= chart_data.day.value_counts()
+
+  new_df= pd.DataFrame(count_days).reset_index()
+  new_df.columns= ['date', 'count']
+  new_df = new_df.rename(columns={'date':'index'}).set_index('index').iloc[::-1, :]
+  r1_col2.bar_chart(new_df)
 
   analitics = user['analitics']
 
