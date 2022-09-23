@@ -4,7 +4,7 @@ def avatarImgH(img):
   return f'<img src={img} style="width: 170px; margin:auto; height: 170px; border-radius: 50%; object-fit: cover; display: block;">'
 
 def renderUserName(user):
-  return f"<h3 style='color: white;'>{user['User']}</h3>"
+  return f"<h3 style='color: white;' >{user['User']}</h3>"
 
 def profile_info(user):
   img = avatarImgH(user['Image'])

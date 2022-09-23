@@ -6,7 +6,6 @@ from atoms.userInfo import profile_info
 from atoms.polbullet import statsBullet
 from atoms.posts import postsIcons
 from atoms.posts import topPosts
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
@@ -52,8 +51,8 @@ __img = "https://ichef.bbci.co.uk/news/976/cpsprodpb/17638/production/_124800859
 
 if 'user' not in st.session_state:
     st.session_state['user'] = {
-        'User': 'instagram',
-        'Image': __img,
+        'User': 'upymemes',
+        'Image': 'http://localhost:5000/static/upymemes/upymemes.png',
         'Description': 'Instagram is a simple way to capture and share the world’s moments.',
         'NoPosts': 0,
         'Followers': 0,
@@ -64,7 +63,7 @@ if 'user' not in st.session_state:
             'total_comms': 0,
             'Mood_usr': 0,
             'User Score': [0],
-            'Post_ranking': []
+            'Post_ranking': [{"type":"GraphImage","url":"https://www.instagram.com/p/Bks6dVkjWMW","display":'http://localhost:5000/static/upymemes/posts/Bks6dVkjWMW.png',"description":"Tienes 10 segundos para decirnos lo que sabes, break that one now.","comments_count":1,"likes_count":14,"owner":"jmbalanzar","date":"2022-07-10","scopePercent":11},{"type":"GraphVideo","url":"https://www.instagram.com/p/BktGBeXBLHR","display":'http://localhost:5000/static/upymemes/posts/BktGBeXBLHR.png',"description":"Good morning! 👌","comments_count":1,"likes_count":12,"owner":"jmbalanzar","date":"2018-05-15","scopePercent":10}]
         }
     }
 
@@ -74,24 +73,29 @@ st.markdown('<br>', unsafe_allow_html=True)
 
 def renderUser(user):
   row1, row2, row3 = st.empty(), st.empty(), st.empty()
-
+  profile_pic = f'http://localhost:5000/static/{user["User"]}/{user["User"]}.png'
   #row 1 divided in 2 columns
   r1_col1, r1_col2 = row1.columns([1,1])
-  r1_col1.markdown(profile_info({'User':user['User'], 'Image':user['Image'], 'Posts':user['NoPosts'], 'Followers':user['Followers'], 'Following':user['Following'], 'Description':user['Description']})+'<br>', unsafe_allow_html=True)
+  r1_col1.markdown(profile_info({'User':user['User'], 'Image':profile_pic, 'Posts':user['NoPosts'], 'Followers':user['Followers'], 'Following':user['Following'], 'Description':user['Description']})+'<br>', unsafe_allow_html=True)
   
   table_likes = []
   table_date = []
+  url =[]
   for post in user['Posts']:
     table_likes.append(post['likes_count'])
     table_date.append(post['date'])
+
   table = {'Date': table_date, 'Likes': table_likes}
   
   #r1_col2.markdown(f"<div class='box'></div>", unsafe_allow_html=True)
-  chart_data = pd.DataFrame({'Date': table_date})
-  r1_col2.write(chart_data)
-  fig, ax = plt.subplots()
-  plt.bar(chart_data['date'], chart_data['count'])
-  st.pyplot(fig)
+  #chart_data = pd.DataFrame({'Date': table_date})
+  #r1_col2.write(chart_data)
+  #st.bar_chart(chart_data['Date'])
+  df = pd.DataFrame(
+    np.random.randn(15, 1),
+    columns=["a"])
+
+  r1_col2.bar_chart(df)
 
   analitics = user['analitics']
 
@@ -111,6 +115,11 @@ def renderUser(user):
   chart_data = chart_data.rename(columns={'Date':'index'}).set_index('index').iloc[::-1, :]
   r3_col1.line_chart(chart_data)
 
+  posts_to_render = []
+  for i, post in enumerate(analitics['Post_ranking']):
+    shortcode = post['url'].split('/')[-1]
+    display = f'http://localhost:5000/static/{user["User"]}/posts/{shortcode}.png'
+    analitics['Post_ranking'][i]['display'] = display
   r3_col2.markdown(f"<div class='box' overflow-y: auto; ><div style=' text-align:center'><strong>Post Ranking</strong>{postsIcons()}</div>{topPosts(analitics['Post_ranking'])}</div>", unsafe_allow_html=True)
 
 
@@ -125,4 +134,3 @@ if search_value:
   user = getUserInfo(search_value)
   with place.container():
     renderUser(user)
-    st.write(user)

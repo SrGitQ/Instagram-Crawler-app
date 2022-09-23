@@ -6,7 +6,7 @@ def postsIcons():
 
 
 def postRow(post):
-  img = f'<img src="{post["display"]}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; display: block;">'
+  img = f'<img src="{post["display"]}" style="width: 75px; height: 75px; border-radius: 50%; object-fit: cover; display: block;">'
   val = f'<div style="display: flex; justify-content: space-around; align-items: center;"><div>{post["likes_count"]}</div><div>{post["scopePercent"]}</div></div>'
   values = f'<div class="valuesLayout">{img}<div>{val}</div></div>'
 

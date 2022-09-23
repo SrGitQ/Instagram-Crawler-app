@@ -1,8 +1,13 @@
-from flask import Flask
+from flask import Flask, send_from_directory
 from crawler_api.utils.scrapper.browser import InstagramWindow
 from crawler_api.utils.credentials import accounts
 
 app = Flask(__name__)
+
+#add a public route
+@app.route("/static/<path:path>")
+def static_dir(path):
+    return send_from_directory("./static", path)
 
 # creating browsers for each account
 browsers = [InstagramWindow('/chromedriver', account).browser for account in accounts]

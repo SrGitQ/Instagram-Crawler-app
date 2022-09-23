@@ -38,18 +38,18 @@ def post_status(browser):
 
 def save_profile_pic(user, img):
 	try:
-		os.mkdir(f'./pics/{user}')
+		os.mkdir(f'./crawler_api/flaskr/static/{user}')
 	except:
 		pass
-	with open(f'./pics/{user}/{user}.png', 'wb') as f:
+	with open(f'./crawler_api/flaskr/static/{user}/{user}.png', 'wb') as f:
 		f.write(img)
 
 def save_post_pic(post, user, img):
 	try:
-		os.mkdir(f'./pics/{user}/posts')
+		os.mkdir(f'./crawler_api/flaskr/static/{user}/posts')
 	except:
 		pass
-	with open(f'./pics/{user}/posts/{post}.png', 'wb') as f:
+	with open(f'./crawler_api/flaskr/static/{user}/posts/{post}.png', 'wb') as f:
 		f.write(img)
 
 def scrapper(user_scrap, browser):
