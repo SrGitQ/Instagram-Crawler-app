@@ -2,7 +2,7 @@ import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from navigator_assistant import WActions
+from crawler_api.scrapper.navigator_assistant import WActions
 
 def createSession(credentials:any, window):
 	'''
@@ -43,7 +43,7 @@ def scrappeUserProfile(user:str, windowActions:WActions):
 	time.sleep(3)
 
 	# store the profile picture
-	windowActions.saveNodeScreenshots('div._aarf img', name=user, path=f'./imgs/{user}/')
+	windowActions.saveNodeScreenshots('div._aarf img', name=user, path=f'./crawler_api/static/imgs/{user}/')
 	
 	# get the information
 	selectors = {
@@ -96,12 +96,12 @@ def parsePosts(userData:dict, windows)->dict:
 				#get the general post info
 				data = window.scrappeData(post_info)
 				#get the date
-				data['date'] = window.scrappeData({"date": "time._aaqe"}, 'datetime')['date']
+				data['date'] = window.scrappeData({"date": "time._aaqe"}, 'datetime')['date'].split('T')[0]
 				index = st_index+j-1
 				print(f'scrapping the post: {index} with window: {j}')
 				
 				#save the post image
-				window.saveNodeScreenshots('video._ab1d, div._aagv img', name=posts[index]['shortcode'], path=f'./imgs/{post["owner"]}/pics/')
+				window.saveNodeScreenshots('video._ab1d, div._aagv img', name=posts[index]['shortcode'], path=f'./crawler_api/static/imgs/{post["owner"]}/pics/')
 				#save the scrapped data on current post
 				posts[index] = {**posts[index], **data}
 
@@ -118,24 +118,24 @@ def parsePosts(userData:dict, windows)->dict:
 			windows[0].window.get(post['url'])
 			time.sleep(3)
 			data = windows[0].scrappeData(post_info)
-			data['date'] = windows[0].scrappeData({"date": "time._aaqe"}, 'datetime')['date']
-			windows[0].saveNodeScreenshots('div._aagv img', name=post['shortcode'], path=f'./imgs/{post["owner"]}/pics/')
+			data['date'] = windows[0].scrappeData({"date": "time._aaqe"}, 'datetime')['date'].split('T')[0]
+			windows[0].saveNodeScreenshots('div._aagv img', name=post['shortcode'], path=f'./crawler_api/static/imgs/{post["owner"]}/pics/')
 
 			posts[i] = {**posts[i], **data}
 
 	userData['posts'] = posts
 	return userData
 
-navigator = WActions()
-navigator_2 = WActions()
-createSession({"user":'karlamakeup14',"pass":'tarea1234'}, navigator.window)
-createSession({"user":'ciscohh1',"pass":'ciscohh3'}, navigator_2.window)
-time.sleep(3)
-data = scrappeUserProfile('', navigator)
-data = parsePosts(data, [navigator, navigator_2])
-print(data)
-navigator.window.close()
-navigator_2.window.close()
+#navigator = WActions()
+#navigator_2 = WActions()
+#createSession({"user":'karlamakeup14',"pass":'tarea1234'}, navigator.window)
+#createSession({"user":'ciscohh1',"pass":'ciscohh3'}, navigator_2.window)
+#time.sleep(3)
+#data = scrappeUserProfile('', navigator)
+#data = parsePosts(data, [navigator, navigator_2])
+#print(data)
+#navigator.window.close()
+#navigator_2.window.close()
 
 #window = WActions(url='https://www.google.com.mx/search?q=perros&hl=en&authuser=0&tbm=isch&sxsrf=ALiCzsa6rFYvQU3FdfFcB-P2k1PjhXgQXw%3A1664138475670&source=hp&biw=1440&bih=796&ei=67wwY8nKJq3LwbkPpsWFkAI&iflsig=AJiK0e8AAAAAYzDK-391OEncbt1NRxp1D1z_FF_X7xsK&ved=0ahUKEwiJ7Mn15rD6AhWtZTABHaZiASIQ4dUDCAc&uact=5&oq=perros&gs_lcp=CgNpbWcQAzIFCAAQgAQyBQgAEIAEMgUIABCABDIFCAAQgAQyBQgAEIAEMgUIABCABDIFCAAQgAQyBQgAEIAEMgUIABCABDIFCAAQgAQ6BAgjECc6CAgAEIAEELEDUABY9QVg2QdoAHAAeACAAW6IAYcFkgEDMC42mAEAoAEBqgELZ3dzLXdpei1pbWc&sclient=img')
 #time.sleep(3)
@@ -161,4 +161,20 @@ navigator_2.window.close()
 
 '''
 
+{
+        'username': 'upymemes',
+        'img': 'http://localhost:5000/static/jmbalanzar/jmbalanzar.png',
+        'bio': 'Instagram is a simple way to capture and share the world’s moments.',
+        'no_posts': 0,
+        'followers': 0,
+        'following': 0,
+        'posts': [{"type":"GraphImage","url":"https://www.instagram.com/p/Cf0CiM7l3Jg","display":'http://localhost:5000/static/imgs/jmbalanzar/pics/Cf0CiM7l3Jg.png',"caption":"Tienes 10 segundos para decirnos lo que sabes, break that one now.","comments_count":1,"likes":14,"owner":"jmbalanzar","date":"2022-07-10","scopePercent":11}],
+        'analitics': {
+            'total_likes': 0,
+            'total_comms': 0,
+            'mood_user': 0,
+            'score': [0],
+            'post_rank': [{"type":"GraphImage","url":"https://www.instagram.com/p/Cf0CiM7l3Jg","display":'http://localhost:5000/static/imgs/jmbalanzar/pics/Cf0CiM7l3Jg.png',"caption":"Tienes 10 segundos para decirnos lo que sabes, break that one now.","comments_count":1,"likes":14,"owner":"jmbalanzar","date":"2022-07-10","scopePercent":11}]
+        }
+    }
 '''

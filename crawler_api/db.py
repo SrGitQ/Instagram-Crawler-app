@@ -38,7 +38,7 @@ def findUser(username): #Function to find a user given the username, username ne
   """
   
   
-  for document in mycol.find({'User': username}):
+  for document in mycol.find({'username': username}):
     print(document)
     print(type(document))
     return document
@@ -76,7 +76,7 @@ def updateUser(username, data):
   
   """
   
-  myquery = {"User": {"$eq":username}}
+  myquery = {"username": {"$eq":username}}
   
   new_values = {'$set': data}
   
