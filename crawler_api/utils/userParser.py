@@ -22,8 +22,8 @@ import plotly.express as px
 def total_likes(data):
     
     likes=[]
-    for like in data['Posts']:
-        likes.append(like['likes_count'])
+    for like in data['posts']:
+        likes.append(like['likes'])
         
     total_likes= sum(likes)
     return total_likes
@@ -32,7 +32,7 @@ def total_likes(data):
 def total_comments(data):
     
     comments=[]
-    for com in data['Posts']:
+    for com in data['posts']:
         comments.append(com['comments_count'])
         
     total_comments= sum(comments)
@@ -40,18 +40,18 @@ def total_comments(data):
 
 def post_ranking(data):
     
-    followers= data['Followers']
-    query= data['Posts'].copy()
+    followers= data['followers']
+    query= data['posts'].copy()
     elements=["type", 'description', 'comments_count', 'owner', 'date']
     for x in query:
-        percent= round((x['likes_count'] * 100)/ followers)
+        percent= round((x['likes'] * 100)/ followers)
         x['scopePercent']= percent
         
         #for item in elements:
         #    del x[item]
         
         
-    query.sort(key=operator.itemgetter('likes_count'), reverse=True)
+    query.sort(key=operator.itemgetter('likes'), reverse=True)
     return query
 
 
@@ -70,16 +70,16 @@ def clean_dates(train):
 
 def predictor (data):
     
-    res= data['Posts']
+    res= data['posts']
         
     table = []
     for post in res:
-        labels = [post['comments_count'],post['likes_count'], post['date']]
+        labels = [post['likes'], post['date']]
         table.append(labels)
         
     dataframe= pd.DataFrame()
     train= dataframe.append(table)
-    train.columns= ['comments_count', 'likes_count', 'date']
+    train.columns= ['likes', 'date']
 
     day, day_decimal= clean_dates(train)
     train= train.assign(day=day, day_decimal=day_decimal )
@@ -88,7 +88,7 @@ def predictor (data):
     model = LinearRegression()
 
     x= train['day_decimal'].array.reshape(-1, 1)
-    y= train['likes_count'].array.reshape(-1, 1)
+    y= train['likes'].array.reshape(-1, 1)
     
     model = LinearRegression().fit(x, y)
     
@@ -102,8 +102,8 @@ def predictor (data):
 def sentiment(data):
 
     string=[]
-    for item in data['Posts']:
-        text= item['description']
+    for item in data['posts']:
+        text= item['caption']
         new= clean(text, no_emoji=True)
         new= new.splitlines()
         string.append(new)
@@ -143,41 +143,61 @@ def score(data):
     range3 = range(100000,999999 )
     range4 = range(1000000,10000000000)
 
-    if data['Followers'] in range4:
+    if data['followers'] in range4:
         score = 100
-        s =  data['Followers'] / 1000000
+        s =  data['followers'] / 1000000
         print('Celebridad')
-    elif data['Followers'] in range3: 
+    elif data['followers'] in range3: 
         score = 80
-        s =  data['Followers'] / 100000
+        s =  data['followers'] / 100000
         print('Macro influencer')
-    elif data['Followers'] in range2:
+    elif data['followers'] in range2:
         score = 60
-        s = data['Followers'] / 10000
+        s = data['followers'] / 10000
         print('Micro Incluencer')
-    elif data['Followers'] in range1:
+    elif data['followers'] in range1:
         score = 40
-        s = data['Followers'] / 1000
+        s = data['followers'] / 1000
         print('Nano influencer')
     else: 
         score = 20 
-        s = data['Followers'] / 100
+        s = data['followers'] / 100
         print('No influencer')
    
-    return score,s 
+    return score,s
 
 
 
 
 def response(data):
     
-    total_li= total_likes(data)
-    total_comm= total_comments(data)
-    like_prediction= predictor(data)
-    mood_user= sentiment(data)
-    post_rank= post_ranking(data)
-    scoreI = score(data)
+    data_fn = {'total_likes': total_likes, 'like_prediction': predictor, 'mood_user': sentiment, 'post_rank': post_ranking, 'score': score}
+    for key, fn in data_fn.items():
+        try:
+            data_fn[key] = fn(data)
+        except:
+            print('Error calculating {}'.format(key))
+            data_fn[key] = None
+    #response = {'Total_likes': total_li, 'Likes_prediction': like_prediction, 'Mood_usr': mood_user, 'Post_ranking': post_rank, 'User Score': scoreI}
     
-    response= {'Total_likes': total_li, 'total_comms': total_comm, 'Likes_prediction': like_prediction, 'Mood_usr': mood_user, 'Post_ranking': post_rank, 'User Score': scoreI}
-    
-    return response
+    return data_fn #response
+
+'''
+st.session_state['user'] = {
+        'username': 'upymemes',
+        'img': 'http://localhost:5000/static/jmbalanzar/jmbalanzar.png',
+        'bio': 'Instagram is a simple way to capture and share the world’s moments.',
+        'no_posts': 0,
+        'followers': 0,
+        'following': 0,
+        'posts': [{"type":"GraphImage","url":"https://www.instagram.com/p/Cf0CiM7l3Jg","display":__img,"description":"Tienes 10 segundos para decirnos lo que sabes, break that one now.","comments_count":1,"likes_count":14,"owner":"jmbalanzar","date":"2022-07-10","scopePercent":11},{"type":"GraphVideo","url":"https://www.instagram.com/p/BizYJ2hBTnc","display":__img,"description":"Good morning! 👌","comments_count":1,"likes_count":12,"owner":"jmbalanzar","date":"2018-05-15","scopePercent":10},{"type":"GraphImage","url":"https://www.instagram.com/p/Bif_dwqh1t8","display":__img,"description":[],"comments_count":1,"likes_count":9,"owner":"jmbalanzar","date":"2018-05-08","scopePercent":7},{"type":"GraphImage","url":"https://www.instagram.com/p/BFc_fohinov","display":__img,"description":[],"comments_count":0,"likes_count":30,"owner":"jmbalanzar","date":"2016-05-16","scopePercent":24}],
+        'analitics': {
+            'total_likes': 0,
+            'total_comms': 0,
+            'mood_user': 0,
+            'score': [0],
+            'post_rank': [{"type":"GraphImage","url":"https://www.instagram.com/p/Bks6dVkjWMW","display":'http://localhost:5000/static/upymemes/posts/Bks6dVkjWMW.png',"description":"Tienes 10 segundos para decirnos lo que sabes, break that one now.","comments_count":1,"likes_count":14,"owner":"jmbalanzar","date":"2022-07-10","scopePercent":11},{"type":"GraphVideo","url":"https://www.instagram.com/p/BktGBeXBLHR","display":'http://localhost:5000/static/upymemes/posts/BktGBeXBLHR.png',"description":"Good morning! 👌","comments_count":1,"likes_count":12,"owner":"jmbalanzar","date":"2018-05-15","scopePercent":10}]
+        }
+    }
+
+'''
